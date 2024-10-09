@@ -23,6 +23,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(VEDA_miniProject2_Blog
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        searchwidget.h searchwidget.cpp searchwidget.ui
+        writewidget.h writewidget.cpp writewidget.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET VEDA_miniProject2_Blog APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

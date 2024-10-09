@@ -1,6 +1,8 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
+#include "searchwidget.h"
+#include "writewidget.h"
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -19,5 +21,8 @@ public:
 
 private:
     Ui::MainWidget *ui;
+
+    SearchWidget *searchWidget;
+    WriteWidget *writeWidget;
 };
 #endif // MAINWIDGET_H

@@ -13,6 +13,48 @@
   <property name="windowTitle">
    <string>MainWidget</string>
   </property>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>10</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="search_pushButton">
+      <property name="text">
+       <string>검색</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="write_pushButton">
+      <property name="text">
+       <string>글쓰기</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>781</width>
+     <height>541</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="main_page"/>
+   <widget class="QWidget" name="write_page"/>
+   <widget class="QWidget" name="search_page"/>
+  </widget>
  </widget>
  <resources/>
  <connections/>
