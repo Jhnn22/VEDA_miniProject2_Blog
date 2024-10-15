@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWidget</class>
+ <widget class="QWidget" name="MainWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWidget</string>
+  </property>
+  <widget class="QWidget" name="horizontalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>10</y>
+     <width>239</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="searchPushButton">
+      <property name="text">
+       <string>검색</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="writePushButton">
+      <property name="text">
+       <string>글쓰기</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="infoPushButton">
+      <property name="text">
+       <string>정보</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>781</width>
+     <height>541</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>2</number>
+   </property>
+   <widget class="QWidget" name="mainPage"/>
+   <widget class="QWidget" name="writePage"/>
+   <widget class="QWidget" name="searchPage"/>
+  </widget>
+  <widget class="QWidget" name="infoWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>720</x>
+     <y>40</y>
+     <width>71</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+	border: none;
+	text-align: left;
+}
+
+QPushButton:hover{
+	
+	background-color: rgb(231, 231, 231);
+	color: rgb(0, 190, 92);
+}</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,1,1">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QPushButton" name="myPostListPushButton">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>내 글 목록</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="myCommentsListPushButton">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>내 댓글 목록</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="loginPushButton">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>로그인</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="withdrawMembershipPushButton">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>회원 탈퇴</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

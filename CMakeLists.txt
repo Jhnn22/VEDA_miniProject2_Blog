@@ -12,19 +12,39 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+# ui 폴더에 있는 ui 파일을 읽을 수 있도록 설정
+set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/ui")
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+set(PROJECT_HEADERS
+        include/mainwidget.h
+        include/searchwidget.h
+        include/writewidget.h
+)
+
+set(PROJECT_UI
+        ui/mainwidget.ui
+        ui/searchwidget.ui
+        ui/writewidget.ui
+)
+
 set(PROJECT_SOURCES
-        main.cpp
-        mainwidget.cpp
-        mainwidget.h
-        mainwidget.ui
+        source/mainwidget.cpp
+        source/searchwidget.cpp
+        source/writewidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(VEDA_miniProject2_Blog
         MANUAL_FINALIZATION
+        main.cpp
+        ${PROJECT_HEADERS}
         ${PROJECT_SOURCES}
-        searchwidget.h searchwidget.cpp searchwidget.ui
-        writewidget.h writewidget.cpp writewidget.ui
+        ${PROJECT_UI}
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET VEDA_miniProject2_Blog APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
