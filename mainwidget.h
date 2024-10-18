@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+class HomeWidget;
+class WriteWidget;
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWidget;
@@ -17,7 +20,15 @@ public:
     MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
 
+    void set_page();
+
+    // void mainPage();
+    // void set_menuBar();
+
 private:
     Ui::MainWidget *ui;
+
+    HomeWidget *homeWidget;
+    WriteWidget *writeWidget;
 };
 #endif // MAINWIDGET_H
