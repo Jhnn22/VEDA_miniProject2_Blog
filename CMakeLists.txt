@@ -12,19 +12,41 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+)
+set(PROJECT_HEADERS
+        include/mainwidget.h
+        include/homewidget.h
+        include/writewidget.h
+        include/accountdialog.h
+        include/postlistwidget.h
+)
+
 set(PROJECT_SOURCES
-        main.cpp
-        mainwidget.cpp
-        mainwidget.h
-        mainwidget.ui
+        source/mainwidget.cpp
+        source/homewidget.cpp
+        source/writewidget.cpp
+        source/accountdialog.cpp
+        source/postlistwidget.cpp
+)
+
+set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/ui")
+set(PROJECT_UI
+        ui/mainwidget.ui
+        ui/homewidget.ui
+        ui/writewidget.ui
+        ui/accountdialog.ui
+        ui/postlistwidget.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(VEDA_miniProject2_Blog
         MANUAL_FINALIZATION
+        main.cpp
+        ${PROJECT_HEADERS}
         ${PROJECT_SOURCES}
-        writewidget.h writewidget.cpp writewidget.ui
-        homewidget.h homewidget.cpp homewidget.ui
+        ${PROJECT_UI}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET VEDA_miniProject2_Blog APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

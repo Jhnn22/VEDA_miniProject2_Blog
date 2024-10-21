@@ -20,10 +20,8 @@ public:
     MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
 
-    void set_page();
-
-    // void mainPage();
-    // void set_menuBar();
+    void setPages();
+    void setSignalRelay();
 
 private:
     Ui::MainWidget *ui;
