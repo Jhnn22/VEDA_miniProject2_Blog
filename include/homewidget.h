@@ -2,9 +2,11 @@
 #define HOMEWIDGET_H
 
 #include <QWidget>
+#include "post.h"
 
 class AccountDialog;
 class PostListWidget;
+class PostWidget;
 
 namespace Ui {
 class HomeWidget;
@@ -23,10 +25,10 @@ public:
     void updateButtons();
 
 signals:
-    void write();
+    void loginSuccess_3(const QString &id);
+    void openWriteWidget();
 
 public slots:
-    void handleLoginResult();
     void updatePostList(const QString &title, const QString &content);
 
 private:
@@ -34,6 +36,7 @@ private:
 
     AccountDialog *accountDialog;
     PostListWidget *postListWidget;
+    PostWidget *postWidget;
 
     bool isLoggedIn;
 };

@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class Network;
+
 namespace Ui {
 class AccountDialog;
 }
@@ -16,18 +18,21 @@ public:
     ~AccountDialog();
 
     void setInputFields();
+    void clearLoginInputFields();
+    void clearCreateAccountInputFields();
     void setButtons();
 
 signals:
     // 네트워크 클래스와 데이터 통신
-    void loginAttempt();
-    void loginSuccess();
+    void loginSuccess_2(const QString &id);
 
 public slots:
     void openAccountDialog();
 
 private:
     Ui::AccountDialog *ui;
+
+    Network *network;
 };
 
 #endif // ACCOUNTDIALOG_H

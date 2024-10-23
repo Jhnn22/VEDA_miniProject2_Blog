@@ -2,6 +2,7 @@
 #include "ui_homewidget.h"
 #include "accountdialog.h"
 #include "postlistwidget.h"
+#include "postwidget.h"
 
 HomeWidget::HomeWidget(QWidget *parent)
     : QWidget(parent)
@@ -11,6 +12,7 @@ HomeWidget::HomeWidget(QWidget *parent)
     ui->infoWidget->setVisible(false);
 
     postListWidget = new PostListWidget(this);
+    postWidget = new PostWidget(this);
 
     isLoggedIn = false;
 
@@ -25,8 +27,16 @@ HomeWidget::~HomeWidget()
 
 void HomeWidget::setPages(){
     ui->stackedWidget->addWidget(postListWidget);
+    ui->stackedWidget->addWidget(postWidget);
+    ui->stackedWidget->setCurrentIndex(0);
 
-    ui->stackedWidget->setCurrentIndex(0);  // 초기화면은 게시글 목록
+    connect(postListWidget, &PostListWidget::openPostWidget, this, [this](const Post &post){
+        postWidget->showPostDetail(post);
+        ui->stackedWidget->setCurrentIndex(1);
+    });
+    connect(postWidget, &PostWidget::exit, this, [this](){
+        ui->stackedWidget->setCurrentIndex(0);
+    });
 }
 
 void HomeWidget::setButtons(){
@@ -35,7 +45,7 @@ void HomeWidget::setButtons(){
         qDebug() << "검색";
     });
     // 글쓰기
-    connect(ui->writePushButton, &QPushButton::clicked, this, &HomeWidget::write);
+    connect(ui->writePushButton, &QPushButton::clicked, this, &HomeWidget::openWriteWidget);
     updateButtons();    // 검색, 글쓰기 버튼 상태 업데이트
 
     // 내 글 목록
@@ -81,15 +91,14 @@ void HomeWidget::updateButtons(){
         // 로그인 버튼 기능 -> 로그인 창 열기
         ui->loginPushButton->setText("로그인");
         connect(ui->loginPushButton, &QPushButton::clicked, accountDialog, &AccountDialog::openAccountDialog);
-        connect(accountDialog, &AccountDialog::loginSuccess, this, &HomeWidget::handleLoginResult);
+        connect(accountDialog, &AccountDialog::loginSuccess_2, this, [this](const QString &id){
+            isLoggedIn = true;
+            emit loginSuccess_3(id);
+            updateButtons();
+        });
     }
 }
 
-void HomeWidget::handleLoginResult(){
-    qDebug() << "로그인 성공";
-    isLoggedIn = true;
-    updateButtons();
-}
 
 void HomeWidget::updatePostList(const QString &title, const QString &content){
     postListWidget->setPostList(title, content);

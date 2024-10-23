@@ -2,7 +2,6 @@
 #include "ui_mainwidget.h"
 #include "homewidget.h"
 #include "writewidget.h"
-#include <qlineedit.h>
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
@@ -14,7 +13,6 @@ MainWidget::MainWidget(QWidget *parent)
     writeWidget = new WriteWidget(this);
 
     setPages();
-    setSignalRelay();
 }
 
 MainWidget::~MainWidget()
@@ -26,14 +24,17 @@ void MainWidget::setPages(){
     ui->stackedWidget->addWidget(homeWidget);
     ui->stackedWidget->addWidget(writeWidget);
     ui->stackedWidget->setCurrentIndex(0);
-}
 
-void MainWidget::setSignalRelay(){
-    connect(homeWidget, &HomeWidget::write, this, [this](){
+    connect(homeWidget, &HomeWidget::openWriteWidget, this, [this](){
         ui->stackedWidget->setCurrentIndex(1);
     });
+    connect(homeWidget, &HomeWidget::loginSuccess_3, this, [this](const QString &id){
+        memberID = id;
+    });
+
     connect(writeWidget, &WriteWidget::exit, this, [this](){
         ui->stackedWidget->setCurrentIndex(0);
     });
     connect(writeWidget, &WriteWidget::postRegisterSuccess, homeWidget, &HomeWidget::updatePostList);
 }
+

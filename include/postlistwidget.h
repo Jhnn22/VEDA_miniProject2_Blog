@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QDateTime>
+#include <QFrame>
+#include <QVBoxLayout>
+#include "post.h"
 
 namespace Ui {
 class PostListWidget;
@@ -16,21 +19,25 @@ public:
     explicit PostListWidget(QWidget *parent = nullptr);
     ~PostListWidget();
 
+    void makePage();
+    void setButtons();
     void setPostList(const QString &title, const QString &content);
 
-    bool eventFilter(QObject *obj, QEvent *event);
-    void showPostDetail(int index);
 
+    bool eventFilter(QObject *obj, QEvent *event);
+
+signals:
+    void openPostWidget(const Post &post);
 
 private:
     Ui::PostListWidget *ui;
 
-    struct Post{
-        QString title;
-        QString content;
-        QDateTime date;
-    };
     QList<Post> postList;
+    QWidget *page;
+    QFrame *frame;
+    QVBoxLayout *pageLayout, *verticalLayout;
+    int totalPosts;
+
 };
 
 #endif // POSTLISTWIDGET_H

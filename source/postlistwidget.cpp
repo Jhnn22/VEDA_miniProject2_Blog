@@ -2,6 +2,7 @@
 #include "ui_postlistwidget.h"
 #include <QHBoxLayout>
 #include <QLabel>
+#define POSTS_PER_PAGE 9
 
 PostListWidget::PostListWidget(QWidget *parent)
     : QWidget(parent)
@@ -9,6 +10,8 @@ PostListWidget::PostListWidget(QWidget *parent)
 {
     ui->setupUi(this);
 
+    makePage();
+    setButtons();
 }
 
 PostListWidget::~PostListWidget()
@@ -16,15 +19,46 @@ PostListWidget::~PostListWidget()
     delete ui;
 }
 
+void PostListWidget::makePage(){
+    page = new QWidget(this);
+    pageLayout = new QVBoxLayout(page);
+    pageLayout->setContentsMargins(0, 0, 0, 0);
+    frame = new QFrame(page);
+    frame->setFrameStyle(QFrame::NoFrame);
+    pageLayout->addWidget(frame);
+    verticalLayout = new QVBoxLayout(frame);
+    verticalLayout->setContentsMargins(0, 0, 0, 0);
+    verticalLayout->setSpacing(0);
+    verticalLayout->setAlignment(Qt::AlignTop);
+    ui->stackedWidget->addWidget(page);
+}
+
+void PostListWidget::setButtons(){
+    connect(ui->previousPushButton, &QPushButton::clicked, this, [this](){
+        if(ui->stackedWidget->currentIndex() > 0){
+            ui->stackedWidget->setCurrentIndex(ui->stackedWidget->currentIndex() - 1);
+        }
+    });
+    connect(ui->nextPushButton, &QPushButton::clicked, this, [this](){
+        if(ui->stackedWidget->currentIndex() < ui->stackedWidget->count() - 1){
+            ui->stackedWidget->setCurrentIndex(ui->stackedWidget->currentIndex() + 1);
+        }
+    });
+}
+
 void PostListWidget::setPostList(const QString &title, const QString &content){
-    // 테스트용 데이터
     Post newPost;
     newPost.title = title;
     newPost.content = content;
     newPost.date = QDateTime::currentDateTime();
     postList.append(newPost);
 
-    QWidget *postWidget = new QWidget(this);
+    totalPosts = postList.size();
+    if(totalPosts % POSTS_PER_PAGE == 1 && totalPosts > POSTS_PER_PAGE){
+        makePage();
+    }
+
+    QWidget *postWidget = new QWidget();
     postWidget->setStyleSheet(
         "QWidget { "
         "    background-color: #f0f0f0; "
@@ -49,11 +83,13 @@ void PostListWidget::setPostList(const QString &title, const QString &content){
     postLayout->setStretchFactor(titleLabel, 7);
     postLayout->setStretchFactor(dateLabel, 3);
 
-    postWidget->setProperty("index", postList.size() - 1); // 위젯에 인덱스 속성 추가
+    // 페이지 별 인덱스 적용
+    postWidget->setProperty("pageIndex", (totalPosts - 1) % POSTS_PER_PAGE);
+    postWidget->setProperty("pageNumber", (totalPosts - 1) / POSTS_PER_PAGE);
 
     postWidget->installEventFilter(this);
 
-    ui->verticalLayout->addWidget(postWidget);
+    verticalLayout->addWidget(postWidget);
 
 }
 
@@ -61,22 +97,14 @@ bool PostListWidget::eventFilter(QObject *obj, QEvent *event){
     if(event->type() == QEvent::MouseButtonPress){
         QWidget *widget = qobject_cast<QWidget*>(obj);
         if(widget){
-            int index = widget->property("index").toInt();
-            if(index >= 0 && index < postList.size()){
-                showPostDetail(index);
+            int pageNumber = widget->property("pageNumber").toInt();
+            int pageIndex = widget->property("pageIndex").toInt();
+            int totalIndex = (pageNumber * POSTS_PER_PAGE) + pageIndex;
+            if(totalIndex >= 0 && totalIndex < postList.size()){
+                emit openPostWidget(postList[totalIndex]);
             }
         }
     }
     return QWidget::eventFilter(obj, event);
 }
 
-void PostListWidget::showPostDetail(int index){
-    Post checkPost = postList.at(index);
-
-    qDebug() << "---------------------";
-    qDebug() << "제목: " + checkPost.title;
-    qDebug() << "작성일: " + checkPost.date.toString("MM-dd HH:mm");
-    qDebug() << "내용: " + checkPost.content;
-
-
-}

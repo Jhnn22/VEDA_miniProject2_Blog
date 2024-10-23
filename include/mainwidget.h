@@ -21,12 +21,13 @@ public:
     ~MainWidget();
 
     void setPages();
-    void setSignalRelay();
 
 private:
     Ui::MainWidget *ui;
 
     HomeWidget *homeWidget;
     WriteWidget *writeWidget;
+
+    QString memberID;
 };
 #endif // MAINWIDGET_H
