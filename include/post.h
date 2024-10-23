@@ -5,9 +5,10 @@
 #include <QDateTime>
 
 struct Post{
+    QString postId;
     QString title;
     QString content;
-    QDateTime date;
+    QString currentDateTime;
 };
 
 #endif // POST_H

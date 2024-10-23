@@ -20,12 +20,12 @@ public:
 
     void setButtons();
 
-signals:
-    void commentRegisterAttempt(const QString &comment);
-    void commentRegisterSuccess(const QString &comment);
+    void getUserId(const QString &userId);
 
 private:
     Ui::CommentWidget *ui;
+
+    QString userId;
 };
 
 #endif // COMMENTWIDGET_H

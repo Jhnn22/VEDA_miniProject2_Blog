@@ -19,17 +19,19 @@ public:
     ~WriteWidget();
 
     void setInputFields();
+    void clearInputFields();
     void setButtons();
-    void setToolButtons();
+
+    void getUserId(const QString &userId);
 
 signals:
     void exit();
-    // 네트워크 클래스와 데이터 통신
-    void postRegisterAttempt(const QString &title, const QString &content);
-    void postRegisterSuccess(const QString &title, const QString &content);
+    void postRegisterSuccess_2(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
 
 private:
     Ui::WriteWidget *ui;
+
+    QString userId;
 };
 
 #endif // WRITEWIDGET_H

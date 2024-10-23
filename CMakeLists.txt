@@ -16,8 +16,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
 set(PROJECT_HEADERS
-        include/mainwidget.h
-        include/homewidget.h
+
+    include/mainwidget.h
         include/writewidget.h
         include/accountdialog.h
         include/postlistwidget.h
@@ -25,23 +25,25 @@ set(PROJECT_HEADERS
         include/post.h
         include/commentwidget.h
         include/commentdisplaywidget.h
+        include/network.h
 )
 
 set(PROJECT_SOURCES
-        source/mainwidget.cpp
-        source/homewidget.cpp
+
+    source/mainwidget.cpp
         source/writewidget.cpp
         source/accountdialog.cpp
         source/postlistwidget.cpp
         source/postwidget.cpp
         source/commentwidget.cpp
         source/commentdisplaywidget.cpp
+        source/network.cpp
 )
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/ui")
 set(PROJECT_UI
-        ui/mainwidget.ui
-        ui/homewidget.ui
+
+    ui/mainwidget.ui
         ui/writewidget.ui
         ui/accountdialog.ui
         ui/postlistwidget.ui
@@ -57,9 +59,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_HEADERS}
         ${PROJECT_SOURCES}
         ${PROJECT_UI}
-        include/network.h
-
-
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET VEDA_miniProject2_Blog APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

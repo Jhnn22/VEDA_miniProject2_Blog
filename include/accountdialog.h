@@ -3,8 +3,6 @@
 
 #include <QDialog>
 
-class Network;
-
 namespace Ui {
 class AccountDialog;
 }
@@ -31,8 +29,6 @@ public slots:
 
 private:
     Ui::AccountDialog *ui;
-
-    Network *network;
 };
 
 #endif // ACCOUNTDIALOG_H

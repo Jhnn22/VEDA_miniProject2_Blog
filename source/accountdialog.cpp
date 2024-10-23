@@ -8,8 +8,6 @@ AccountDialog::AccountDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
-    network = new Network;
-
     setInputFields();
     setButtons();
 }
@@ -49,20 +47,20 @@ void AccountDialog::setButtons(){
         if(!ui->idLineEdit->text().isEmpty() && !ui->pwLineEdit->text().isEmpty()){
             QString id = ui->idLineEdit->text();
             QString pw = ui->pwLineEdit->text();
-            network->loginAttempt(id, pw);
+            Network::instance()->loginAttempt(id, pw);
         }
         else{
-            // 경고 - 빈칸 존재
+            // 빈칸 존재
         }
     });
-    connect(network, &Network::loginSuccess, this, [this](const QString &id){
+    connect(Network::instance(), &Network::loginSuccess, this, [this](const QString &id){
         clearLoginInputFields();
         emit loginSuccess_2(id);
         accept();
     });
-    connect(network, &Network::loginFailed, this, [this](const QString &errorMessage){
+    connect(Network::instance(), &Network::loginFailed, this, [this](const QString &errorMessage){
         clearLoginInputFields();
-        // 경고 - 로그인 실패
+        // 로그인 실패
     });
     connect(ui->createAccountPushButton, &QPushButton::clicked, this, [this](){
         clearLoginInputFields();
@@ -70,32 +68,32 @@ void AccountDialog::setButtons(){
     });
 
     // 회원가입
+    connect(ui->exitPushButton, &QPushButton::clicked, this, [this](){
+        clearCreateAccountInputFields();
+        ui->stackedWidget->setCurrentIndex(0);
+    });
     connect(ui->createAccountPushButton_2, &QPushButton::clicked, this, [this](){
         if(!ui->idLineEdit_2->text().isEmpty() && !ui->pwLineEdit_2->text().isEmpty() && !ui->pwCheckLineEdit->text().isEmpty()){
             if(ui->pwLineEdit_2->text() == ui->pwCheckLineEdit->text()){
                 QString id = ui->idLineEdit_2->text();
                 QString pw = ui->pwLineEdit_2->text();
-                network->createAccountAttempt(id, pw);
+                Network::instance()->createAccountAttempt(id, pw);
             }
             else{
-                // 경고 - 비밀번호 확인 실패
+                // 비밀번호 확인 실패
             }
         }
         else{
-            // 경고 - 빈칸 존재
+            // 빈칸 존재
         }
     });
-    connect(network, &Network::createAccountSuccess, this, [this](){
+    connect(Network::instance(), &Network::createAccountSuccess, this, [this](){
         clearCreateAccountInputFields();
         ui->stackedWidget->setCurrentIndex(0);
     });
-    connect(network, &Network::createAccountFailed, this, [this](const QString &errorMessage){
+    connect(Network::instance(), &Network::createAccountFailed, this, [this](const QString &errorMessage){
         clearCreateAccountInputFields();
-        // 경고 - 회원가입 실패
-    });
-    connect(ui->exitPushButton, &QPushButton::clicked, this, [this](){
-        clearCreateAccountInputFields();
-        ui->stackedWidget->setCurrentIndex(0);
+        // 회원가입 실패
     });
 }
 

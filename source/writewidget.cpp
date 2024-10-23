@@ -1,6 +1,8 @@
 #include "writewidget.h"
 #include "ui_writewidget.h"
+#include "network.h"
 #include <QToolBar>
+#include <QDateTime>
 
 WriteWidget::WriteWidget(QWidget *parent)
     : QWidget(parent)
@@ -10,7 +12,6 @@ WriteWidget::WriteWidget(QWidget *parent)
 
     setInputFields();
     setButtons();
-    setToolButtons();
 }
 
 WriteWidget::~WriteWidget()
@@ -23,23 +24,42 @@ void WriteWidget::setInputFields(){
     ui->textEdit->setPlaceholderText("내용을 입력하세요");
 }
 
-void WriteWidget::setButtons(){
-    connect(ui->exitPushButton, &QPushButton::clicked, this, &WriteWidget::exit);
-    connect(ui->temporarySavePushButton, &QPushButton::clicked, this, [=](){
-        qDebug() << "임시 저장";
-    });
-    connect(ui->postRegisterPushButton, &QPushButton::clicked, this, [this](){
-        QString title = ui->titleLineEdit->text();
-        QString content = ui->textEdit->toPlainText();
+void WriteWidget::clearInputFields(){
+    ui->titleLineEdit->clear();
+    ui->textEdit->clear();
+}
 
-        emit postRegisterAttempt(title, content); // 네트워크 클래스로 데이터 전송
-        emit postRegisterSuccess(title, content); // 테스트 코드
+void WriteWidget::setButtons(){
+    connect(ui->exitPushButton, &QPushButton::clicked, this, [this](){
+        clearInputFields();
+        emit exit();
+    });
+
+    connect(ui->temporarySavePushButton, &QPushButton::clicked, this, &WriteWidget::exit);
+
+    connect(ui->postRegisterPushButton, &QPushButton::clicked, this, [this](){
+        if(!ui->titleLineEdit->text().isEmpty() && !ui->textEdit->toPlainText().isEmpty()){
+            QString title = ui->titleLineEdit->text();
+            QString content = ui->textEdit->toPlainText();
+            QString currentDateTime = QDateTime::currentDateTime().toString("HH:mm");
+
+            Network::instance()->postRegisterAttempt(title, content, currentDateTime, userId);
+        }
+        else{
+            // 빈칸 존재
+        }
+    });
+    connect(Network::instance(), &Network::postRegisterSuccess, this, [this](const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
+        emit postRegisterSuccess_2(postId, title, content, currentDateTime);
+
+        clearInputFields();
+        emit exit();
+    });
+    connect(Network::instance(), &Network::postRegisterFailed, this, [this](const QString &errorMessage){
+        // 게시글 등록 실패
     });
 }
 
-void WriteWidget::setToolButtons(){
-    QToolBar *toolBar = new QToolBar(this);
-    toolBar->setStyleSheet("QToolBar { background: white; }");
-
-    ui->horizontalLayout->addWidget(toolBar);
+void WriteWidget::getUserId(const QString &userId){
+    this->userId = userId;
 }

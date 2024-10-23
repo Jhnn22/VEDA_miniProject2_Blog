@@ -17,18 +17,22 @@ CommentDisplayWidget::~CommentDisplayWidget()
     delete ui;
 }
 
-void CommentDisplayWidget::setInputFields(const QString &comment){
-    QDateTime date = QDateTime::currentDateTime();
-    ui->commentInfoLabel->setText("JH | " + date.toString("yyyy-MM-dd HH:mm"));
+void CommentDisplayWidget::setInputFields(const QString &commentId, const QString &userId, const QString &comment){
+    QString currentDateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
+    ui->commentInfoLabel->setText(userId + " | " + currentDateTime);
     ui->commentTextEdit->setPlainText(comment);
     ui->commentTextEdit->setReadOnly(true);
 }
 
 void CommentDisplayWidget::setButtons(){
     connect(ui->editPushButton, &QPushButton::clicked, this, [this](){
-        qDebug() << "편집";
+
     });
     connect(ui->deletePushButton, &QPushButton::clicked, this, [this](){
         qDebug() << "삭제";
     });
+}
+
+void CommentDisplayWidget::getUserId(const QString &userId){
+    this->userId = userId;
 }

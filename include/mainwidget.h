@@ -3,31 +3,41 @@
 
 #include <QWidget>
 
-class HomeWidget;
 class WriteWidget;
+class AccountDialog;
+class PostListWidget;
+class PostWidget;
 
-QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWidget;
 }
-QT_END_NAMESPACE
 
 class MainWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    MainWidget(QWidget *parent = nullptr);
+    explicit MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
 
     void setPages();
+    void setButtons();
+    void updateButtons();
+
+signals:
+    void loginSuccess_3(const QString &id);
 
 private:
     Ui::MainWidget *ui;
 
-    HomeWidget *homeWidget;
     WriteWidget *writeWidget;
+    AccountDialog *accountDialog;
+    PostListWidget *postListWidget;
+    PostWidget *postWidget;
 
-    QString memberID;
+    QString userId;
+
+    bool isLoggedIn;
 };
+
 #endif // MAINWIDGET_H

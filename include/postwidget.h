@@ -19,16 +19,24 @@ public:
     ~PostWidget();
 
     void setComments();
-    void setButtons();
-    void showPostDetail(const Post &post);
+    void setButtons(const Post &post);
+    void openPost_2(const Post &post);
+
+    void getUserId(const QString &userId);
 
 signals:
     void exit();
+    void editPostList(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void deletePostList(const QString &postId);
 
 private:
     Ui::PostWidget *ui;
 
     CommentWidget *commentWidget;
+
+    QString userId;
+    bool isEditing;
+    bool isButtonConnected;
 };
 
 #endif // POSTWIDGET_H

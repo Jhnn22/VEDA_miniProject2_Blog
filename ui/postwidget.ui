@@ -49,17 +49,23 @@ QPushButton:hover{
     <number>0</number>
    </property>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>70</height>
+       <height>50</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>70</height>
+       <height>50</height>
       </size>
      </property>
      <property name="font">
@@ -69,15 +75,14 @@ QPushButton:hover{
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
+      <string notr="true">QLineEdit{
+	border: none;
+}</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="label">
      <property name="font">
       <font>
        <pointsize>10</pointsize>
@@ -103,10 +108,17 @@ QPushButton:hover{
 	border: none;
 }</string>
      </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::NoFrame</enum>
+     </property>
     </widget>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout"/>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
