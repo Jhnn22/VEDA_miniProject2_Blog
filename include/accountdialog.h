@@ -21,7 +21,7 @@ public:
     void setButtons();
 
 signals:
-    void loginSuccess_2(const QString &token, const QString &id);
+    void loginSuccess_2(const QString &token, const QString &id, const QString &pw);
 
 public slots:
     void openAccountDialog();

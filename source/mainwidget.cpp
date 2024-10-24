@@ -4,6 +4,7 @@
 #include "accountdialog.h"
 #include "postlistwidget.h"
 #include "postwidget.h"
+#include "network.h"
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
@@ -15,8 +16,6 @@ MainWidget::MainWidget(QWidget *parent)
     writeWidget = new WriteWidget(this);
     postListWidget = new PostListWidget(this);
     postWidget = new PostWidget(this);
-
-    isLoggedIn = false;
 
     setPages();
     setButtons();
@@ -68,22 +67,38 @@ void MainWidget::setButtons(){
     connect(ui->myCommentPushButton, &QPushButton::clicked, this, [=](){
         qDebug() << "내 댓글 목록";
     });
-    connect(ui->logoutPushButton, &QPushButton::clicked, this, [=](){
-        isLoggedIn = false;
+    connect(ui->logoutPushButton, &QPushButton::clicked, this, [this](){
+        Network::instance()->logoutAttempt(token);
+    });
+    connect(Network::instance(), &Network::logoutSuccess, this, [this](){
+        this->token.clear();
+        ui->stackedWidget_2->setCurrentIndex(0);
+        postListWidget->getInfos("", "");
         updateButtons();
     });
-    connect(ui->deleteAccountPushButton, &QPushButton::clicked, this, [=](){
-        qDebug() << "회원탈퇴";
+    connect(Network::instance(), &Network::logoutFailed, this, [this](const QString &errorMessage){
+        // 로그아웃 실패
     });
+    connect(ui->deleteAccountPushButton, &QPushButton::clicked, this, [this](){
+        Network::instance()->deleteAccountAttempt(token, userId, userPw);
+        qDebug() << token + userId + userPw;
+    });
+    connect(Network::instance(), &Network::deleteAccountSuccess, this, [this](){
+        Network::instance()->logoutAttempt(token);
+    });
+    connect(Network::instance(), &Network::deleteAccountFailed, this, [this](const QString &errorMessage){
+        // 로그아웃 실패
+    });
+
 }
 
 void MainWidget::updateButtons(){
     // 글쓰기 버튼
-    ui->writePushButton->setEnabled(isLoggedIn);
+    ui->writePushButton->setEnabled(!token.isEmpty());
 
     // 로그인 버튼
     disconnect(ui->loginPushButton, nullptr, nullptr, nullptr);
-    if(isLoggedIn){
+    if(!token.isEmpty()){
         // 로그인 창 삭제
         accountDialog->deleteLater();
         accountDialog = nullptr;
@@ -95,15 +110,15 @@ void MainWidget::updateButtons(){
     }
     else{
         // 드롭 다운 메뉴 숨기기
-        ui->infoWidget->setVisible(isLoggedIn);
+        ui->infoWidget->setVisible(!token.isEmpty());
         // 새로운 로그인 창 생성
         accountDialog = new AccountDialog(this);
         // 로그인 버튼 기능 -> 로그인 창 열기
         ui->loginPushButton->setText("로그인");
         connect(ui->loginPushButton, &QPushButton::clicked, accountDialog, &AccountDialog::openAccountDialog);
-        connect(accountDialog, &AccountDialog::loginSuccess_2, this, [this](const QString &token, const QString &id){
-            isLoggedIn = true;
-            this->token = token; userId = id;
+        connect(accountDialog, &AccountDialog::loginSuccess_2, this, [this](const QString &token, const QString &id, const QString &pw){
+            this->token = token;
+            userId = id; userPw = pw;
             writeWidget->getInfos(token, id);
             postListWidget->getInfos(token, id);
             postWidget->getInfos(token, id);

@@ -32,9 +32,8 @@ private:
     PostListWidget *postListWidget;
     PostWidget *postWidget;
 
-    QString token, userId;
-
-    bool isLoggedIn;
+    QString token = "";
+    QString userId, userPw;
 };
 
 #endif // MAINWIDGET_H

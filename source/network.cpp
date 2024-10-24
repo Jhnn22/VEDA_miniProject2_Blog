@@ -5,6 +5,7 @@
 #include <QUrlQuery>
 #include <QDateTime>
 
+#include <QUuid>
 
 Network *Network::m_instance = nullptr;
 
@@ -25,6 +26,7 @@ QJsonObject Network::byteArrayToJsonObject(const QByteArray &data){
 }
 
 void Network::loginAttempt(const QString &id, const QString &pw){
+    // emit loginSuccess("token", id, pw);
     QJsonObject jsonObject;
     jsonObject["id"] = id;
     jsonObject["password"] = pw;
@@ -39,7 +41,7 @@ void Network::loginAttempt(const QString &id, const QString &pw){
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
             if(response.contains("token")) {
                 QString token = response["token"].toString();   // 토큰 추출
-                emit loginSuccess(token, id);
+                emit loginSuccess(token, id, pw);
             } else {
                 emit loginFailed("로그인 실패: 서버 응답 오류");
             }
@@ -51,12 +53,37 @@ void Network::loginAttempt(const QString &id, const QString &pw){
     });
 }
 
+void Network::logoutAttempt(const QString &token){
+    // emit logoutSuccess("");
+    QNetworkRequest request(QUrl(QString(SERVER_URL) + "/user/logout"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
+
+    QNetworkReply *reply = networkManager->post(request, QByteArray());
+
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if(reply->error() == QNetworkReply::NoError) {
+            QJsonObject response = byteArrayToJsonObject(reply->readAll());
+            if(response["status"].toString() == "Success") {
+                emit logoutSuccess(token);
+            } else {
+                emit logoutFailed("로그아웃 실패: 서버 응답 오류");
+            }
+        } else {
+            QJsonObject errorResponse = byteArrayToJsonObject(reply->readAll());
+            emit logoutFailed(errorResponse["message"].toString());
+        }
+        reply->deleteLater();
+    });
+}
+
 void Network::createAccountAttempt(const QString &id, const QString &pw){
+    // emit createAccountSuccess();
     QJsonObject jsonObject;
     jsonObject["id"] = id;
     jsonObject["password"] = pw;
     jsonObject["nickname"] = id;    // 닉넴 id로 땜빵?
-    jsonObject["is_manager"] = false;
+    jsonObject["is_manager"] = 0;
 
     QNetworkRequest request(QUrl(QString(SERVER_URL) + "/user/register"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -79,7 +106,37 @@ void Network::createAccountAttempt(const QString &id, const QString &pw){
     });
 }
 
+void Network::deleteAccountAttempt(const QString &token, const QString &id, const QString &pw){
+    // emit deleteAccountSuccess(token);
+    QJsonObject jsonObject;
+    jsonObject["id"] = id;
+    jsonObject["password"] = pw;
+
+    QNetworkRequest request(QUrl(QString(SERVER_URL) + "/user/delete"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
+
+    QNetworkReply *reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
+
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if(reply->error() == QNetworkReply::NoError) {
+            QJsonObject response = byteArrayToJsonObject(reply->readAll());
+            if(response["status"].toString() == "Success") {
+                emit deleteAccountSuccess(token);
+            } else {
+                emit deleteAccountFailed("회원탈퇴 실패: 서버 응답 오류");
+            }
+        } else {
+            QJsonObject errorResponse = byteArrayToJsonObject(reply->readAll());
+            emit deleteAccountFailed(errorResponse["message"].toString());
+        }
+        reply->deleteLater();
+    });
+}
+
 void Network::postRegisterAttempt(const QString &token, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId){
+    // const QString post_id = QUuid::createUuid().toString();
+    // emit postRegisterSuccess(token, post_id, title, content, currentDateTime);
     QJsonObject jsonObject;
     jsonObject["title"] = title;
     jsonObject["content"] = content;
@@ -108,6 +165,7 @@ void Network::postRegisterAttempt(const QString &token, const QString &title, co
 }
 
 void Network::postEditAttempt(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId){
+    // emit postEditSuccess(token, postId, title, content, currentDateTime);
     QJsonObject jsonObject;
     jsonObject["id"] = postId.toInt();
     jsonObject["title"] = title;
@@ -136,6 +194,7 @@ void Network::postEditAttempt(const QString &token, const QString &postId, const
 }
 
 void Network::postDeleteAttempt(const QString &token, const QString &postId){
+    // emit postDeleteSuccess(token, postId);
     QJsonObject jsonObject;
     jsonObject["id"] = postId.toInt();
 
@@ -161,6 +220,7 @@ void Network::postDeleteAttempt(const QString &token, const QString &postId){
 }
 
 void Network::commentRegisterAttempt(const QString &token, const QString &postId, const QString &userId, const QString &comment){
+    // emit commentRegisterSuccess(token, "1", comment);
     QJsonObject jsonObject;
     jsonObject["post_id"] = postId;
     jsonObject["author"] = userId;

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#define SERVER_URL "http:// "
+#define SERVER_URL "http://"
 
 class Network : public QObject{
     Q_OBJECT
@@ -14,7 +14,11 @@ public:
 
     void loginAttempt(const QString &id, const QString &pw);
 
+    void logoutAttempt(const QString &token);
+
     void createAccountAttempt(const QString &id, const QString &pw);
+
+    void deleteAccountAttempt(const QString &token, const QString &id, const QString &pw);
 
     void postRegisterAttempt(const QString &token, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId);
 
@@ -25,11 +29,17 @@ public:
     void commentRegisterAttempt(const QString &token, const QString &postId, const QString &userId, const QString &comment);
 
 signals:
-    void loginSuccess(const QString &token, const QString &id);
+    void loginSuccess(const QString &token, const QString &id, const QString &pw);
     void loginFailed(const QString &errorMessage);
+
+    void logoutSuccess(const QString &token);
+    void logoutFailed(const QString &errorMessage);
 
     void createAccountSuccess();
     void createAccountFailed(const QString &errorMessage);
+
+    void deleteAccountSuccess(const QString &token);
+    void deleteAccountFailed(const QString &token);
 
     void postRegisterSuccess(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
     void postRegisterFailed(const QString &errorMessage);

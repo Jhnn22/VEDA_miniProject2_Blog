@@ -10,9 +10,7 @@ PostWidget::PostWidget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    commentWidget = new CommentWidget(this);
-
-    setComments();
+    commentWidget = nullptr;
 }
 
 PostWidget::~PostWidget()
@@ -20,37 +18,34 @@ PostWidget::~PostWidget()
     delete ui;
 }
 
-void PostWidget::setComments(){
-    ui->verticalLayout->addWidget(commentWidget);
+
+/*
+ * 현재 A->A, A->B는 괜찮은데, A->B->A이런식으로 갔다오면 댓글이 지워짐
+ * 게시글 목록이나 댓글 목록이나 서버랑 통신으로 가져와서 토큰, 위젯을 묶어서 맵으로 저장해야 할 것 같다..
+ * 죄송합니다/...ㅠㅜ
+ */
+void PostWidget::setComments(const QString &postId){
+    if (!commentWidget || this->currentPostId != postId) {
+        if (commentWidget) {
+            delete commentWidget;
+            commentWidget = nullptr;
+        }
+
+        commentWidget = new CommentWidget(this);
+        commentWidget->getInfos(token, postId, userId);
+
+        ui->verticalLayout->addWidget(commentWidget);
+
+        this->currentPostId = postId;
+    }
 }
 
 void PostWidget::setButtons(QWidget *clickedPostWidget){
     QString postId = clickedPostWidget->property("postId").toString();
-    commentWidget->getPostId(postId);
 
     if(isButtonConnected){
         disconnect(ui->editPushButton, nullptr, nullptr, nullptr);
         disconnect(ui->deletePushButton, nullptr, nullptr, nullptr);
-
-        connect(ui->editPushButton, &QPushButton::clicked, this, [this, postId](){
-            if(!isEditing){
-                ui->editPushButton->setText("저장");
-                ui->lineEdit->setReadOnly(isEditing);
-                ui->textEdit->setReadOnly(isEditing);
-                isEditing = true;
-            }
-            else{
-                QString title = ui->lineEdit->text();
-                QString content = ui->textEdit->toPlainText();
-                QString currentDateTime = QDateTime::currentDateTime().toString("HH:mm");
-                Network::instance()->postEditAttempt(token, postId, title, content, currentDateTime, userId);
-            }
-        });
-        connect(ui->deletePushButton, &QPushButton::clicked, this, [this, postId](){
-            Network::instance()->postDeleteAttempt(token, postId);
-        });
-
-        return;
     }
 
     connect(ui->exitPushButton, &QPushButton::clicked, this, &PostWidget::exit);
@@ -86,9 +81,8 @@ void PostWidget::setButtons(QWidget *clickedPostWidget){
         // 게시글 편집 실패
     });
 
-    connect(Network::instance(), &Network::postDeleteSuccess, this, [this](const QString &postId){
+    connect(Network::instance(), &Network::postDeleteSuccess, this, [this](const QString &token, const QString &postId){
         emit deletePostList(token, postId);
-        qDebug() << "삭제 성공 시그널 반환 시:" + postId;
         emit exit();
     });
     connect(Network::instance(), &Network::postDeleteFailed, this, [this](){
@@ -121,10 +115,10 @@ void PostWidget::openPost_2(QWidget *clickedPostWidget){
     isEditing = false;
 
     setButtons(clickedPostWidget);
+    setComments(postId);
 }
 
 void PostWidget::getInfos(const QString &token, const QString &userId){
     this->token = token;
     this->userId = userId;
-    commentWidget->getInfos(token, userId);
 }

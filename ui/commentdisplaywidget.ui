@@ -34,6 +34,9 @@
      <property name="spacing">
       <number>0</number>
      </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
      <item>
       <widget class="QLabel" name="commentInfoLabel">
        <property name="minimumSize">
@@ -69,51 +72,6 @@
        </property>
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <property name="spacing">
-      <number>3</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="editPushButton">
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>편집</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="deletePushButton">
-       <property name="minimumSize">
-        <size>
-         <width>40</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>삭제</string>
        </property>
       </widget>
      </item>

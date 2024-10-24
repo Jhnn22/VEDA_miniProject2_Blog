@@ -20,8 +20,8 @@ public:
 
     void makePage();
     void setButtons();
-    void updatePostList(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
-    void removePostFromList(const QString &postId);
+    void updatePostList(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void removePostFromList(const QString &token, const QString &postId);
     void relocatePostListUI();
     bool eventFilter(QObject *obj, QEvent *event);
 

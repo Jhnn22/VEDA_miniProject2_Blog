@@ -19,9 +19,7 @@ public:
     ~CommentWidget();
 
     void setButtons();
-
-    void getInfos(const QString &token, const QString &userId);
-    void getPostId(const QString &postId);
+    void getInfos(const QString &token, const QString &postId, const QString &userId);
 
 private:
     Ui::CommentWidget *ui;

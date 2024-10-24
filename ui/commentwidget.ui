@@ -107,7 +107,7 @@
              <item>
               <layout class="QVBoxLayout" name="verticalLayout">
                <property name="spacing">
-                <number>5</number>
+                <number>0</number>
                </property>
               </layout>
              </item>

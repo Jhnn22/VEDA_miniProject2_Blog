@@ -33,10 +33,10 @@ void CommentWidget::setButtons(){
         }
 
     });
-    connect(Network::instance(), &Network::commentRegisterSuccess, this, [this](const QString &commentId, const QString &comment){
+    connect(Network::instance(), &Network::commentRegisterSuccess, this, [this](const QString &token, const QString &commentId, const QString &comment){
         CommentDisplayWidget *commentDisplayWidget = new CommentDisplayWidget(this);
         commentDisplayWidget->getInfos(token, userId);
-        commentDisplayWidget->setInputFields(commentId, userId, comment);
+        commentDisplayWidget->setInputFields(token, commentId, comment);
         ui->verticalLayout->addWidget(commentDisplayWidget);
     });
     connect(Network::instance(), &Network::commentRegisterFailed, this, [this](){
@@ -44,11 +44,8 @@ void CommentWidget::setButtons(){
     });
 }
 
-void CommentWidget::getInfos(const QString &token, const QString &userId){
+void CommentWidget::getInfos(const QString &token, const QString &postId, const QString &userId){
     this->token = token;
-    this->userId = userId;
-}
-
-void CommentWidget::getPostId(const QString &postId){
     this->postId = postId;
+    this->userId = userId;
 }

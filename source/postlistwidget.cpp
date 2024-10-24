@@ -49,7 +49,7 @@ void PostListWidget::setButtons(){
     });
 }
 
-void PostListWidget::updatePostList(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
+void PostListWidget::updatePostList(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
     QWidget *postWidget;
 
     if(postWidgets.contains(postId)){
@@ -121,7 +121,7 @@ void PostListWidget::updatePostList(const QString &postId, const QString &title,
     totalPosts++;
 }
 
-void PostListWidget::removePostFromList(const QString &postId){
+void PostListWidget::removePostFromList(const QString &token, const QString &postId){
     if(postWidgets.contains(postId)){
         QWidget *postWidget = postWidgets[postId];
 
@@ -139,7 +139,7 @@ void PostListWidget::removePostFromList(const QString &postId){
 bool PostListWidget::eventFilter(QObject *obj, QEvent *event){
     if(event->type() == QEvent::MouseButtonPress){
         QWidget *widget = qobject_cast<QWidget*>(obj);
-        if(widget){
+        if(widget && !token.isEmpty()){
             for (auto it = postWidgets.begin(); it != postWidgets.end(); ++it) {
                 if (it.value() == widget) {
                     emit openPost(it.value());

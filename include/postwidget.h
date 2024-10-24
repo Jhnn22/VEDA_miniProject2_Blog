@@ -17,7 +17,8 @@ public:
     explicit PostWidget(QWidget *parent = nullptr);
     ~PostWidget();
 
-    void setComments();
+    void setComments(const QString &postId);
+
     void setButtons(QWidget *clickedPostWidget);
     void openPost_2(QWidget *clickedPostWidget);
 
@@ -32,10 +33,13 @@ private:
     Ui::PostWidget *ui;
 
     CommentWidget *commentWidget;
+    QMap<QString, CommentWidget*> commentWidgets;
 
     QString token, userId;
     bool isEditing;
     bool isButtonConnected;
+
+    QString currentPostId;
 };
 
 #endif // POSTWIDGET_H
