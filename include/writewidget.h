@@ -22,16 +22,16 @@ public:
     void clearInputFields();
     void setButtons();
 
-    void getUserId(const QString &userId);
+    void getInfos(const QString &token, const QString &userId);
 
 signals:
     void exit();
-    void postRegisterSuccess_2(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void postRegisterSuccess_2(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
 
 private:
     Ui::WriteWidget *ui;
 
-    QString userId;
+    QString token, userId;
 };
 
 #endif // WRITEWIDGET_H

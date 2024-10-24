@@ -43,14 +43,14 @@ void WriteWidget::setButtons(){
             QString content = ui->textEdit->toPlainText();
             QString currentDateTime = QDateTime::currentDateTime().toString("HH:mm");
 
-            Network::instance()->postRegisterAttempt(title, content, currentDateTime, userId);
+            Network::instance()->postRegisterAttempt(token, title, content, currentDateTime, userId);
         }
         else{
             // 빈칸 존재
         }
     });
-    connect(Network::instance(), &Network::postRegisterSuccess, this, [this](const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
-        emit postRegisterSuccess_2(postId, title, content, currentDateTime);
+    connect(Network::instance(), &Network::postRegisterSuccess, this, [this](const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
+        emit postRegisterSuccess_2(token, postId, title, content, currentDateTime);
 
         clearInputFields();
         emit exit();
@@ -60,6 +60,7 @@ void WriteWidget::setButtons(){
     });
 }
 
-void WriteWidget::getUserId(const QString &userId){
+void WriteWidget::getInfos(const QString &token, const QString &userId){
+    this->token = token;
     this->userId = userId;
 }

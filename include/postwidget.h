@@ -2,7 +2,6 @@
 #define POSTWIDGET_H
 
 #include <QWidget>
-#include "post.h"
 
 class CommentWidget;
 
@@ -19,22 +18,22 @@ public:
     ~PostWidget();
 
     void setComments();
-    void setButtons(const Post &post);
-    void openPost_2(const Post &post);
+    void setButtons(QWidget *clickedPostWidget);
+    void openPost_2(QWidget *clickedPostWidget);
 
-    void getUserId(const QString &userId);
+    void getInfos(const QString &token, const QString &userId);
 
 signals:
     void exit();
-    void editPostList(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
-    void deletePostList(const QString &postId);
+    void editPostList(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void deletePostList(const QString &token, const QString &postId);
 
 private:
     Ui::PostWidget *ui;
 
     CommentWidget *commentWidget;
 
-    QString userId;
+    QString token, userId;
     bool isEditing;
     bool isButtonConnected;
 };

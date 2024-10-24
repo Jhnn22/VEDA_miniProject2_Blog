@@ -25,7 +25,7 @@ void CommentWidget::setButtons(){
     connect(ui->registerPushButton, &QPushButton::clicked, this, [this](){
         if(!ui->commentTextEdit->toPlainText().isEmpty()){
             QString comment = ui->commentTextEdit->toPlainText();
-            Network::instance()->commentRegisterAttempt(userId, comment);
+            Network::instance()->commentRegisterAttempt(token, postId, userId, comment);
             ui->commentTextEdit->clear();
         }
         else{
@@ -35,6 +35,7 @@ void CommentWidget::setButtons(){
     });
     connect(Network::instance(), &Network::commentRegisterSuccess, this, [this](const QString &commentId, const QString &comment){
         CommentDisplayWidget *commentDisplayWidget = new CommentDisplayWidget(this);
+        commentDisplayWidget->getInfos(token, userId);
         commentDisplayWidget->setInputFields(commentId, userId, comment);
         ui->verticalLayout->addWidget(commentDisplayWidget);
     });
@@ -43,7 +44,11 @@ void CommentWidget::setButtons(){
     });
 }
 
-void CommentWidget::getUserId(const QString &userId){
+void CommentWidget::getInfos(const QString &token, const QString &userId){
+    this->token = token;
     this->userId = userId;
 }
 
+void CommentWidget::getPostId(const QString &postId){
+    this->postId = postId;
+}

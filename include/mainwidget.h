@@ -24,9 +24,6 @@ public:
     void setButtons();
     void updateButtons();
 
-signals:
-    void loginSuccess_3(const QString &id);
-
 private:
     Ui::MainWidget *ui;
 
@@ -35,7 +32,7 @@ private:
     PostListWidget *postListWidget;
     PostWidget *postWidget;
 
-    QString userId;
+    QString token, userId;
 
     bool isLoggedIn;
 };

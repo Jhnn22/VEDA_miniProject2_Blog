@@ -20,12 +20,13 @@ public:
 
     void setButtons();
 
-    void getUserId(const QString &userId);
+    void getInfos(const QString &token, const QString &userId);
+    void getPostId(const QString &postId);
 
 private:
     Ui::CommentWidget *ui;
 
-    QString userId;
+    QString token, userId, postId;
 };
 
 #endif // COMMENTWIDGET_H

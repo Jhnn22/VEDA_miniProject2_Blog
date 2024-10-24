@@ -33,6 +33,7 @@ void CommentDisplayWidget::setButtons(){
     });
 }
 
-void CommentDisplayWidget::getUserId(const QString &userId){
+void CommentDisplayWidget::getInfos(const QString &token, const QString &userId){
+    this->token = token;
     this->userId = userId;
 }

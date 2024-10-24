@@ -53,9 +53,9 @@ void AccountDialog::setButtons(){
             // 빈칸 존재
         }
     });
-    connect(Network::instance(), &Network::loginSuccess, this, [this](const QString &id){
+    connect(Network::instance(), &Network::loginSuccess, this, [this](const QString &token, const QString &id){
         clearLoginInputFields();
-        emit loginSuccess_2(id);
+        emit loginSuccess_2(token, id);
         accept();
     });
     connect(Network::instance(), &Network::loginFailed, this, [this](const QString &errorMessage){

@@ -24,10 +24,15 @@ void PostWidget::setComments(){
     ui->verticalLayout->addWidget(commentWidget);
 }
 
-void PostWidget::setButtons(const Post &post){
-    if(!isButtonConnected){
-        connect(ui->exitPushButton, &QPushButton::clicked, this, &PostWidget::exit);
-        connect(ui->editPushButton, &QPushButton::clicked, this, [this, post](){
+void PostWidget::setButtons(QWidget *clickedPostWidget){
+    QString postId = clickedPostWidget->property("postId").toString();
+    commentWidget->getPostId(postId);
+
+    if(isButtonConnected){
+        disconnect(ui->editPushButton, nullptr, nullptr, nullptr);
+        disconnect(ui->deletePushButton, nullptr, nullptr, nullptr);
+
+        connect(ui->editPushButton, &QPushButton::clicked, this, [this, postId](){
             if(!isEditing){
                 ui->editPushButton->setText("저장");
                 ui->lineEdit->setReadOnly(isEditing);
@@ -38,22 +43,43 @@ void PostWidget::setButtons(const Post &post){
                 QString title = ui->lineEdit->text();
                 QString content = ui->textEdit->toPlainText();
                 QString currentDateTime = QDateTime::currentDateTime().toString("HH:mm");
-                Network::instance()->postEditAttempt(post.postId, title, content, currentDateTime, userId);
+                Network::instance()->postEditAttempt(token, postId, title, content, currentDateTime, userId);
             }
         });
-        connect(ui->deletePushButton, &QPushButton::clicked, this, [this, post](){
-            Network::instance()->postDeleteAttempt(post.postId);
+        connect(ui->deletePushButton, &QPushButton::clicked, this, [this, postId](){
+            Network::instance()->postDeleteAttempt(token, postId);
         });
+
+        return;
     }
+
+    connect(ui->exitPushButton, &QPushButton::clicked, this, &PostWidget::exit);
+    connect(ui->editPushButton, &QPushButton::clicked, this, [this, postId](){
+        if(!isEditing){
+            ui->editPushButton->setText("저장");
+            ui->lineEdit->setReadOnly(isEditing);
+            ui->textEdit->setReadOnly(isEditing);
+            isEditing = true;
+        }
+        else{
+            QString title = ui->lineEdit->text();
+            QString content = ui->textEdit->toPlainText();
+            QString currentDateTime = QDateTime::currentDateTime().toString("HH:mm");
+            Network::instance()->postEditAttempt(token, postId, title, content, currentDateTime, userId);
+        }
+    });
+    connect(ui->deletePushButton, &QPushButton::clicked, this, [this, postId](){
+        Network::instance()->postDeleteAttempt(token, postId);
+    });
     isButtonConnected = true;
 
-    connect(Network::instance(), &Network::postEditSuccess, this, [this](const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
+    connect(Network::instance(), &Network::postEditSuccess, this, [this](const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
         ui->editPushButton->setText("편집");
         ui->lineEdit->setReadOnly(isEditing);
         ui->textEdit->setReadOnly(isEditing);
         isEditing = false;
 
-        emit editPostList(postId, title, content, currentDateTime);
+        emit editPostList(token, postId, title, content, currentDateTime);
         emit exit();
     });
     connect(Network::instance(), &Network::postEditFailed, this, [this](){
@@ -61,7 +87,8 @@ void PostWidget::setButtons(const Post &post){
     });
 
     connect(Network::instance(), &Network::postDeleteSuccess, this, [this](const QString &postId){
-        emit deletePostList(postId);
+        emit deletePostList(token, postId);
+        qDebug() << "삭제 성공 시그널 반환 시:" + postId;
         emit exit();
     });
     connect(Network::instance(), &Network::postDeleteFailed, this, [this](){
@@ -70,26 +97,34 @@ void PostWidget::setButtons(const Post &post){
 
 }
 
-void PostWidget::openPost_2(const Post &post){
-    qDebug() << "---------------------";
-    qDebug() << "제목: " + post.title;
-    qDebug() << "작성자: " + userId;
-    qDebug() << "작성일: " + post.currentDateTime;
-    qDebug() << "내용: " + post.content;
+void PostWidget::openPost_2(QWidget *clickedPostWidget){
+    // 위젯의 속성에서 데이터 가져오기
+    QString postId = clickedPostWidget->property("postId").toString();
+    QString title = clickedPostWidget->property("title").toString();
+    QString content = clickedPostWidget->property("content").toString();
+    QString currentDateTime = clickedPostWidget->property("currentDateTime").toString();
 
-    ui->lineEdit->setText(post.title);
+    // 테스트
+    qDebug() << "-------------------------";
+    qDebug() << "Post ID:" << postId;
+    qDebug() << "Title:" << title;
+    qDebug() << "Content:" << content;
+    qDebug() << "Date/Time:" << currentDateTime;
+
+    ui->lineEdit->setText(title);
     QString ymd = QDateTime::currentDateTime().toString("yyyy-MM-dd ");
-    ui->label->setText(userId + " | 댓글: " + "개 | 작성일: " + ymd + post.currentDateTime);
-    ui->textEdit->setText(post.content);
+    ui->label->setText(userId + " | 작성일: " + ymd + currentDateTime);
+    ui->textEdit->setText(content);
 
     ui->lineEdit->setReadOnly(true);
     ui->textEdit->setReadOnly(true);
     isEditing = false;
 
-    setButtons(post);
+    setButtons(clickedPostWidget);
 }
 
-void PostWidget::getUserId(const QString &userId){
+void PostWidget::getInfos(const QString &token, const QString &userId){
+    this->token = token;
     this->userId = userId;
-    commentWidget->getUserId(userId);
+    commentWidget->getInfos(token, userId);
 }

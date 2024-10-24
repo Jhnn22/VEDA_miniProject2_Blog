@@ -18,12 +18,12 @@ public:
     void setInputFields(const QString &commentId, const QString &userId, const QString &comment);
     void setButtons();
 
-    void getUserId(const QString &userId);
+    void getInfos(const QString &token, const QString &userId);
 
 private:
     Ui::CommentDisplayWidget *ui;
 
-    QString userId;
+    QString token, userId;
 };
 
 #endif // COMMENTDISPLAYWIDGET_H

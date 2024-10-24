@@ -21,8 +21,7 @@ public:
     void setButtons();
 
 signals:
-    // 네트워크 클래스와 데이터 통신
-    void loginSuccess_2(const QString &id);
+    void loginSuccess_2(const QString &token, const QString &id);
 
 public slots:
     void openAccountDialog();

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
-#include "post.h"
+#include <QMap>
 
 namespace Ui {
 class PostListWidget;
@@ -22,24 +22,25 @@ public:
     void setButtons();
     void updatePostList(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
     void removePostFromList(const QString &postId);
+    void relocatePostListUI();
     bool eventFilter(QObject *obj, QEvent *event);
 
-    void getUserId(const QString &userId);
+    void getInfos(const QString &token, const QString &userId);
 
     void updateUIAfterDelete(int pageNumber, int startIndex);
     void reorganizePages();
 
 signals:
-    void openPost(const Post &post);
+    void openPost(QWidget *clickedPostWidget);
 
 private:
     Ui::PostListWidget *ui;
 
-    QList<Post> postList;
     int totalPosts;
     QVBoxLayout *verticalLayout;
     QLabel *titleLabel, *userIdLabel, *currentDateTimeLabel;
-    QString userId;
+    QMap<QString, QWidget*> postWidgets;
+    QString token, userId;
 };
 
 #endif // POSTLISTWIDGET_H

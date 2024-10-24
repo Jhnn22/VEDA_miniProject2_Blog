@@ -4,7 +4,6 @@
 #include "accountdialog.h"
 #include "postlistwidget.h"
 #include "postwidget.h"
-#include "post.h"
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
@@ -43,15 +42,15 @@ void MainWidget::setPages(){
     ui->stackedWidget_2->addWidget(postWidget);
     ui->stackedWidget_2->setCurrentIndex(0);
 
-    connect(postListWidget, &PostListWidget::openPost, this, [this](const Post &post){
-        postWidget->openPost_2(post);
+    connect(postListWidget, &PostListWidget::openPost, this, [this](QWidget *clickedPostWidget){
+        postWidget->openPost_2(clickedPostWidget);
         ui->stackedWidget_2->setCurrentIndex(1);
     });
     connect(postWidget, &PostWidget::exit, this, [this](){
         ui->stackedWidget_2->setCurrentIndex(0);
     });
     connect(postWidget, &PostWidget::editPostList, postListWidget, &PostListWidget::updatePostList);
-    // connect(postWidget, &PostWidget::deletePostList, postListWidget, &PostListWidget::removePostFromList);
+    connect(postWidget, &PostWidget::deletePostList, postListWidget, &PostListWidget::removePostFromList);
 }
 
 void MainWidget::setButtons(){
@@ -102,12 +101,12 @@ void MainWidget::updateButtons(){
         // 로그인 버튼 기능 -> 로그인 창 열기
         ui->loginPushButton->setText("로그인");
         connect(ui->loginPushButton, &QPushButton::clicked, accountDialog, &AccountDialog::openAccountDialog);
-        connect(accountDialog, &AccountDialog::loginSuccess_2, this, [this](const QString &id){
+        connect(accountDialog, &AccountDialog::loginSuccess_2, this, [this](const QString &token, const QString &id){
             isLoggedIn = true;
-            userId = id;
-            writeWidget->getUserId(userId);
-            postListWidget->getUserId(userId);
-            postWidget->getUserId(userId);
+            this->token = token; userId = id;
+            writeWidget->getInfos(token, id);
+            postListWidget->getInfos(token, id);
+            postWidget->getInfos(token, id);
             updateButtons();
 
         });

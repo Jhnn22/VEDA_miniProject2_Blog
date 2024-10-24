@@ -50,33 +50,33 @@ void PostListWidget::setButtons(){
 }
 
 void PostListWidget::updatePostList(const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
-    for(auto &post : postList){
-        if(post.postId == postId){
-            post.title = title;
-            post.content = content;
-            post.currentDateTime = currentDateTime;
+    QWidget *postWidget;
 
-            titleLabel->setText(title);
-            userIdLabel->setText(userId);
-            currentDateTimeLabel->setText(currentDateTime);
+    if(postWidgets.contains(postId)){
+        postWidget = postWidgets[postId];
 
-            return;
+        QList<QLabel*> labels = postWidget->findChildren<QLabel*>();
+        if (labels.size() >= 3) {
+            labels[0]->setText(title);
+            labels[1]->setText(userId);
+            labels[2]->setText(currentDateTime);
         }
+
+        postWidget->setProperty("title", title);
+        postWidget->setProperty("userId", userId);
+        postWidget->setProperty("content", content);
+        postWidget->setProperty("currentDateTime", currentDateTime);
+
+        return;
     }
 
-    Post newPost;
-    newPost.postId = postId;
-    newPost.title = title;
-    newPost.content = content;
-    newPost.currentDateTime = currentDateTime;
-    postList.append(newPost);
-
-    totalPosts = postList.size();
+    // 새 페이지 생성
+    totalPosts = postWidgets.size();
     if(totalPosts % POSTS_PER_PAGE == 1 && totalPosts > POSTS_PER_PAGE){
         makePage();
     }
 
-    QWidget *postWidget = new QWidget();
+    postWidget = new QWidget();
     postWidget->setStyleSheet(
         "QWidget { "
         "    background-color: #f0f0f0; "
@@ -106,33 +106,33 @@ void PostListWidget::updatePostList(const QString &postId, const QString &title,
     postLayout->setStretchFactor(userIdLabel, 2);
     postLayout->setStretchFactor(currentDateTimeLabel, 3);
 
-    // 페이지 별 인덱스 적용
-    postWidget->setProperty("pageNumber", (totalPosts - 1) / POSTS_PER_PAGE);
-    postWidget->setProperty("pageIndex", (totalPosts - 1) % POSTS_PER_PAGE);
+    // 속성 설정
+    postWidget->setProperty("postId", postId);
+    postWidget->setProperty("title", title);
+    postWidget->setProperty("content", content);
+    postWidget->setProperty("currentDateTime", currentDateTime);
 
     postWidget->installEventFilter(this);
 
+    postWidgets[postId] = postWidget;
+
     verticalLayout->addWidget(postWidget);
+
+    totalPosts++;
 }
 
 void PostListWidget::removePostFromList(const QString &postId){
-    int deletedIndex = -1;
+    if(postWidgets.contains(postId)){
+        QWidget *postWidget = postWidgets[postId];
 
-    // 삭제할 게시글의 인덱스 찾기
-    for(int i = 0; i < postList.size(); i++) {
-        if(postList[i].postId == postId) {
-            deletedIndex = i;
-            break;
-        }
-    }
+        postWidget->removeEventFilter(this);
 
-    if(deletedIndex != -1) {
-        // 게시글 삭제
-        postList.removeAt(deletedIndex);
+        verticalLayout->removeWidget(postWidget);
+        postWidget->deleteLater();
+
+        postWidgets.remove(postId);
+
         totalPosts--;
-
-        // 게시글 목록 삭제
-
     }
 }
 
@@ -140,17 +140,18 @@ bool PostListWidget::eventFilter(QObject *obj, QEvent *event){
     if(event->type() == QEvent::MouseButtonPress){
         QWidget *widget = qobject_cast<QWidget*>(obj);
         if(widget){
-            int pageNumber = widget->property("pageNumber").toInt();
-            int pageIndex = widget->property("pageIndex").toInt();
-            int totalIndex = (pageNumber * POSTS_PER_PAGE) + pageIndex;
-            if(totalIndex >= 0 && totalIndex < postList.size()){
-                emit openPost(postList[totalIndex]);
+            for (auto it = postWidgets.begin(); it != postWidgets.end(); ++it) {
+                if (it.value() == widget) {
+                    emit openPost(it.value());
+                    break;
+                }
             }
         }
     }
     return QWidget::eventFilter(obj, event);
 }
 
-void PostListWidget::getUserId(const QString &userId){
+void PostListWidget::getInfos(const QString &token, const QString &userId){
+    this->token = token;
     this->userId = userId;
 }
