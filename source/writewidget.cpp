@@ -41,16 +41,15 @@ void WriteWidget::setButtons(){
         if(!ui->titleLineEdit->text().isEmpty() && !ui->textEdit->toPlainText().isEmpty()){
             QString title = ui->titleLineEdit->text();
             QString content = ui->textEdit->toPlainText();
-            QString currentDateTime = QDateTime::currentDateTime().toString("HH:mm");
 
-            Network::instance()->postRegisterAttempt(token, title, content, currentDateTime, userId);
+            Network::instance()->postRegisterAttempt(token, title, content, userId);
         }
         else{
             // 빈칸 존재
         }
     });
-    connect(Network::instance(), &Network::postRegisterSuccess, this, [this](const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime){
-        emit postRegisterSuccess_2(token, postId, title, content, currentDateTime);
+    connect(Network::instance(), &Network::postRegisterSuccess, this, [this](const QString &token, const QString &postId, const QString &title, const QString &content){
+        emit postRegisterSuccess_2(token, postId, title, content);
 
         clearInputFields();
         emit exit();

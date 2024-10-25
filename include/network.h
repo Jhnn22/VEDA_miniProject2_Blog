@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#define SERVER_URL "http://"
+#define SERVER_URL "http://192.168.0.94:8000"
 
 class Network : public QObject{
     Q_OBJECT
@@ -20,13 +20,17 @@ public:
 
     void deleteAccountAttempt(const QString &token, const QString &id, const QString &pw);
 
-    void postRegisterAttempt(const QString &token, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId);
+    void postRegisterAttempt(const QString &token, const QString &title, const QString &content, const QString &userId);
 
-    void postEditAttempt(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId);
+    void postEditAttempt(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &userId);
 
     void postDeleteAttempt(const QString &token, const QString &postId);
 
+    void requestPostList(const QString &token);
+
     void commentRegisterAttempt(const QString &token, const QString &postId, const QString &userId, const QString &comment);
+
+    void requestCommentList(const QString &token, const QString &postId);
 
 signals:
     void loginSuccess(const QString &token, const QString &id, const QString &pw);
@@ -41,17 +45,23 @@ signals:
     void deleteAccountSuccess(const QString &token);
     void deleteAccountFailed(const QString &token);
 
-    void postRegisterSuccess(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void postRegisterSuccess(const QString &token, const QString &postId, const QString &title, const QString &content);
     void postRegisterFailed(const QString &errorMessage);
 
-    void postEditSuccess(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void postEditSuccess(const QString &token, const QString &postId, const QString &title, const QString &content);
     void postEditFailed(const QString &errorMessage);
 
     void postDeleteSuccess(const QString &token, const QString &postId);
     void postDeleteFailed(const QString &errorMessage);
 
+    void postListReceived(const QJsonArray &posts);
+    void postListFailed(const QString &error);
+
     void commentRegisterSuccess(const QString &token, const QString &commentId, const QString &comment);
     void commentRegisterFailed(const QString &errorMessage);
+
+    void commentListReceived(const QString &postId, const QJsonArray &comments);
+    void commentListFailed(const QString &error);
 
 private:
     explicit Network(QObject *parent = nullptr);

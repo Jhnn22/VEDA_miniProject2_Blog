@@ -5,6 +5,8 @@
 #include "postlistwidget.h"
 #include "postwidget.h"
 #include "network.h"
+#include <QJsonArray>
+#include <QJsonObject>
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
@@ -19,6 +21,8 @@ MainWidget::MainWidget(QWidget *parent)
 
     setPages();
     setButtons();
+
+    postListWidget->refreshPostList(token);
 }
 
 MainWidget::~MainWidget()
@@ -33,9 +37,9 @@ void MainWidget::setPages(){
 
     connect(writeWidget, &WriteWidget::exit, this, [this](){
         ui->stackedWidget->setCurrentIndex(0);
+        ui->stackedWidget_2->setCurrentIndex(0);
     });
-    connect(writeWidget, &WriteWidget::postRegisterSuccess_2, postListWidget, &PostListWidget::updatePostList);
-
+    connect(writeWidget, &WriteWidget::postRegisterSuccess_2, postListWidget, &PostListWidget::refreshPostList);
     // postListWidget
     ui->stackedWidget_2->addWidget(postListWidget);
     ui->stackedWidget_2->addWidget(postWidget);
@@ -48,13 +52,13 @@ void MainWidget::setPages(){
     connect(postWidget, &PostWidget::exit, this, [this](){
         ui->stackedWidget_2->setCurrentIndex(0);
     });
-    connect(postWidget, &PostWidget::editPostList, postListWidget, &PostListWidget::updatePostList);
+    connect(postWidget, &PostWidget::editPostList, postListWidget, &PostListWidget::refreshPostList);
     connect(postWidget, &PostWidget::deletePostList, postListWidget, &PostListWidget::removePostFromList);
 }
 
 void MainWidget::setButtons(){
     connect(ui->searchPushButton, &QPushButton::clicked, this, [this](){
-        qDebug() << "검색";
+        //검색 페이지로 이동
     });
     connect(ui->writePushButton, &QPushButton::clicked, this, [this](){
         ui->stackedWidget->setCurrentIndex(1);
@@ -73,7 +77,7 @@ void MainWidget::setButtons(){
     connect(Network::instance(), &Network::logoutSuccess, this, [this](){
         this->token.clear();
         ui->stackedWidget_2->setCurrentIndex(0);
-        postListWidget->getInfos("", "");
+        postListWidget->getInfos(token, "");
         updateButtons();
     });
     connect(Network::instance(), &Network::logoutFailed, this, [this](const QString &errorMessage){
@@ -81,10 +85,13 @@ void MainWidget::setButtons(){
     });
     connect(ui->deleteAccountPushButton, &QPushButton::clicked, this, [this](){
         Network::instance()->deleteAccountAttempt(token, userId, userPw);
-        qDebug() << token + userId + userPw;
+        qDebug() << token + "\n" + userId + "\n" + userPw;
     });
     connect(Network::instance(), &Network::deleteAccountSuccess, this, [this](){
-        Network::instance()->logoutAttempt(token);
+        this->token.clear();
+        ui->stackedWidget_2->setCurrentIndex(0);
+        postListWidget->getInfos(token, "");
+        updateButtons();
     });
     connect(Network::instance(), &Network::deleteAccountFailed, this, [this](const QString &errorMessage){
         // 로그아웃 실패

@@ -26,7 +26,7 @@ public:
 
 signals:
     void exit();
-    void postRegisterSuccess_2(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void postRegisterSuccess_2(const QString &token, const QString &postId, const QString &title, const QString &content);
 
 private:
     Ui::WriteWidget *ui;

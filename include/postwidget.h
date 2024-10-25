@@ -18,15 +18,20 @@ public:
     ~PostWidget();
 
     void setComments(const QString &postId);
+    void loadComments(const QString &postId);
+    void clearCurrentComment();
+    void handleCommentListReceived(const QString &postId, const QJsonArray &comments);
+    void handleCommentListError(const QString &error);
 
     void setButtons(QWidget *clickedPostWidget);
     void openPost_2(QWidget *clickedPostWidget);
 
     void getInfos(const QString &token, const QString &userId);
+    void cleanupNetworkConnections();
 
 signals:
     void exit();
-    void editPostList(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
+    void editPostList(const QString &token, const QString &postId, const QString &title, const QString &content);
     void deletePostList(const QString &token, const QString &postId);
 
 private:

@@ -20,18 +20,21 @@ public:
 
     void makePage();
     void setButtons();
-    void updatePostList(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime);
     void removePostFromList(const QString &token, const QString &postId);
     void relocatePostListUI();
     bool eventFilter(QObject *obj, QEvent *event);
 
     void getInfos(const QString &token, const QString &userId);
 
-    void updateUIAfterDelete(int pageNumber, int startIndex);
-    void reorganizePages();
+    void refreshPostList(const QString &token);
+    void clearPostList();
 
 signals:
     void openPost(QWidget *clickedPostWidget);
+
+public slots:
+    void handlePostListReceived(const QJsonArray &posts);
+    void handlePostListError(const QString &error);
 
 private:
     Ui::PostListWidget *ui;

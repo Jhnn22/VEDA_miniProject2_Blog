@@ -83,7 +83,7 @@ QLabel{
        <number>0</number>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,2,2,1">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,2,3">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -110,13 +110,6 @@ QLabel{
          <widget class="QLabel" name="label_3">
           <property name="text">
            <string>작성일</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>댓글</string>
           </property>
          </widget>
         </item>

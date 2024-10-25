@@ -64,7 +64,7 @@ void Network::logoutAttempt(const QString &token){
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
+            if(response["status"].toString() == "success") {
                 emit logoutSuccess(token);
             } else {
                 emit logoutFailed("로그아웃 실패: 서버 응답 오류");
@@ -93,7 +93,7 @@ void Network::createAccountAttempt(const QString &id, const QString &pw){
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
+            if(response["status"].toString() == "success") {
                 emit createAccountSuccess();
             } else {
                 emit createAccountFailed("계정 생성 실패: 서버 응답 오류");
@@ -121,7 +121,7 @@ void Network::deleteAccountAttempt(const QString &token, const QString &id, cons
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
+            if(response["status"].toString() == "success") {
                 emit deleteAccountSuccess(token);
             } else {
                 emit deleteAccountFailed("회원탈퇴 실패: 서버 응답 오류");
@@ -134,25 +134,26 @@ void Network::deleteAccountAttempt(const QString &token, const QString &id, cons
     });
 }
 
-void Network::postRegisterAttempt(const QString &token, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId){
+void Network::postRegisterAttempt(const QString &token, const QString &title, const QString &content, const QString &userId){
     // const QString post_id = QUuid::createUuid().toString();
     // emit postRegisterSuccess(token, post_id, title, content, currentDateTime);
     QJsonObject jsonObject;
     jsonObject["title"] = title;
     jsonObject["content"] = content;
-    jsonObject["file"] = QJsonArray();  // 빈 파일 배열
+
 
     QNetworkRequest request(QUrl(QString(SERVER_URL) + "/post/register"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
 
     QNetworkReply *reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
+            if(response["status"].toString() == "success") {
                 QString post_id = QString::number(response["post_id"].toInt());
-                emit postRegisterSuccess(token, post_id, title, content, currentDateTime);
+                emit postRegisterSuccess(token, post_id, title, content);
             } else {
                 emit postRegisterFailed("게시글 등록 실패: 서버 응답 오류");
             }
@@ -164,24 +165,24 @@ void Network::postRegisterAttempt(const QString &token, const QString &title, co
     });
 }
 
-void Network::postEditAttempt(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &currentDateTime, const QString &userId){
+void Network::postEditAttempt(const QString &token, const QString &postId, const QString &title, const QString &content, const QString &userId){
     // emit postEditSuccess(token, postId, title, content, currentDateTime);
     QJsonObject jsonObject;
-    jsonObject["id"] = postId.toInt();
+    jsonObject["id"] = postId;
     jsonObject["title"] = title;
     jsonObject["content"] = content;
-    jsonObject["file"] = QJsonArray();  // 빈 파일 배열
 
     QNetworkRequest request(QUrl(QString(SERVER_URL) + "/post/modify"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
 
     QNetworkReply *reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
-                emit postEditSuccess(token, postId, title, content, currentDateTime);
+            if(response["status"].toString() == "success") {
+                emit postEditSuccess(token, postId, title, content);
             } else {
                 emit postEditFailed("게시글 수정 실패: 서버 응답 오류");
             }
@@ -196,17 +197,17 @@ void Network::postEditAttempt(const QString &token, const QString &postId, const
 void Network::postDeleteAttempt(const QString &token, const QString &postId){
     // emit postDeleteSuccess(token, postId);
     QJsonObject jsonObject;
-    jsonObject["id"] = postId.toInt();
-
+    jsonObject["id"] = postId;
     QNetworkRequest request(QUrl(QString(SERVER_URL) + "/post/delete"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
 
     QNetworkReply *reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
+            if(response["status"].toString() == "success") {
                 emit postDeleteSuccess(token, postId);
             } else {
                 emit postDeleteFailed("게시글 삭제 실패: 서버 응답 오류");
@@ -214,6 +215,30 @@ void Network::postDeleteAttempt(const QString &token, const QString &postId){
         } else {
             QJsonObject errorResponse = byteArrayToJsonObject(reply->readAll());
             emit postDeleteFailed(errorResponse["message"].toString());
+        }
+        reply->deleteLater();
+    });
+}
+
+void Network::requestPostList(const QString &token) {
+    QNetworkRequest request(QUrl(QString(SERVER_URL) + "/post/list"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
+
+    QNetworkReply *reply = networkManager->get(request);
+
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            QJsonObject response = byteArrayToJsonObject(reply->readAll());
+            qDebug() << response.keys();
+            if (response.contains("posts")) {
+                emit postListReceived(response["posts"].toArray());
+            } else {
+                emit postListFailed("게시글 목록 조회 실패: 서버 응답 오류");
+            }
+        } else {
+            QJsonObject errorResponse = byteArrayToJsonObject(reply->readAll());
+            emit postListFailed(errorResponse["message"].toString());
         }
         reply->deleteLater();
     });
@@ -228,13 +253,14 @@ void Network::commentRegisterAttempt(const QString &token, const QString &postId
 
     QNetworkRequest request(QUrl(QString(SERVER_URL) + "/comment/insert"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
 
     QNetworkReply *reply = networkManager->post(request, QJsonDocument(jsonObject).toJson());
 
     connect(reply, &QNetworkReply::finished, this, [=]() {
         if(reply->error() == QNetworkReply::NoError) {
             QJsonObject response = byteArrayToJsonObject(reply->readAll());
-            if(response["status"].toString() == "Success") {
+            if(response["status"].toString() == "success") {
                 QString id = QString::number(response["id"].toInt());
                 emit commentRegisterSuccess(token, id, comment);
             } else {
@@ -248,4 +274,26 @@ void Network::commentRegisterAttempt(const QString &token, const QString &postId
     });
 }
 
+void Network::requestCommentList(const QString &token, const QString &postId) {
+    QNetworkRequest request(QUrl(QString(SERVER_URL) + "/comment?post_id=" + postId));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", token.toUtf8());
+
+    QNetworkReply *reply = networkManager->get(request);
+
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if(reply->error() == QNetworkReply::NoError) {
+            QJsonObject response = byteArrayToJsonObject(reply->readAll());
+            if(response.contains("comments")) {
+                emit commentListReceived(postId, response["comments"].toArray());
+            } else {
+                emit commentListFailed("댓글 목록 조회 실패: 서버 응답 오류");
+            }
+        } else {
+            QJsonObject errorResponse = byteArrayToJsonObject(reply->readAll());
+            emit commentListFailed(errorResponse["message"].toString());
+        }
+        reply->deleteLater();
+    });
+}
 
